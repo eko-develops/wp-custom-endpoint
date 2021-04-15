@@ -9,7 +9,7 @@
 /** 
  * Docs Used:
  * https://developer.wordpress.org/reference/functions/register_rest_route/
- * 
+ * https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/
  */
 
 /*  First we need to register a route. This will will tell the API
@@ -56,13 +56,16 @@ function eko_search($request){
         foreach($products as $product){
             $results[] = array(
                     'name' => $product->name,
-                    'regular_price' => $product->regular_price,
-                    'stock_status' => $product->stock_status
+                    'stock_status' => $product->stock_status,
+                    'link' => $product->get_permalink(),
+                    'image' => wp_get_attachment_url( $product->get_image_id() ),
+                    'category_link' =>get_category_link(get_the_terms( $product->get_id(), 'product_cat')),
+                    'category' => get_the_terms( $product->get_id(), 'product_cat')
             );
         }//endforeach
 
         //We only want to return maximum 5 results
-        $trimmedResults = array_slice($results, 0, 5);
+        $trimmedResults = array_slice($results, 0, 3);
 
 
         //Throw an error if there are no results
